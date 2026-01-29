@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mode Map — Guitar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="instrument-nav">
+    <a href="index.html" class="nav-link">Piano</a>
+    <a href="guitar.html" class="nav-link active">Guitar</a>
+  </nav>
+
+  <header class="header">
+    <h1>Mode Map</h1>
+    <div class="current-display" id="current-key-mode">Select a key</div>
+  </header>
+
+  <section class="main-content">
+    <div class="circle-section">
+      <div id="circle-container"></div>
+    </div>
+
+    <div class="info-panel">
+      <div class="mode-section">
+        <h3>Mode</h3>
+        <div id="mode-buttons"></div>
+      </div>
+
+      <div class="scale-section">
+        <h3>Scale Notes</h3>
+        <div id="scale-notes"></div>
+      </div>
+
+      <div class="chords-section">
+        <h3>Diatonic Chords</h3>
+        <div id="chord-cards"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fretboard-section">
+    <div id="fretboard-container"></div>
+  </section>
+
+  <section class="guide-section">
+    <details class="guide-block" open>
+      <summary class="guide-heading">How to Use This Tool</summary>
+      <div class="guide-content">
+        <ol>
+          <li><strong>Pick a key</strong> &mdash; Click any wedge on the Circle of Fifths to choose your root note.</li>
+          <li><strong>Choose a mode</strong> &mdash; Select one of the seven modes. The app defaults to Ionian (major scale).</li>
+          <li><strong>Explore the scale</strong> &mdash; The scale notes appear in the info panel. Click any note to hear it. The root note is highlighted in red.</li>
+          <li><strong>Play chords</strong> &mdash; The diatonic chords for your key and mode are shown with Roman numerals. Click a chord card to hear its notes played as a short arpeggio.</li>
+          <li><strong>Use the fretboard</strong> &mdash; The guitar neck shows 15 frets in standard tuning (EADGBE). Scale tones are highlighted and labeled; the root note gets a stronger highlight. Click or tap any position to hear it.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="guide-block">
+      <summary class="guide-heading">The Circle of Fifths</summary>
+      <div class="guide-content">
+        <p>The <strong>Circle of Fifths</strong> arranges all twelve musical keys so that each one is a perfect fifth (seven semitones) above the previous. Moving clockwise adds one sharp; moving counter-clockwise adds one flat.</p>
+        <ul>
+          <li><strong>Clockwise (sharps):</strong> C &rarr; G &rarr; D &rarr; A &rarr; E &rarr; B &rarr; F#</li>
+          <li><strong>Counter-clockwise (flats):</strong> C &rarr; F &rarr; Bb &rarr; Eb &rarr; Ab &rarr; Db &rarr; Gb</li>
+        </ul>
+        <p>Adjacent keys on the circle share most of their notes, which makes them natural choices for key changes. For example, C major and G major differ by only one note (F vs F#). This is why the circle is so useful for songwriting and improvisation&mdash;it maps harmonic distance.</p>
+      </div>
+    </details>
+
+    <details class="guide-block">
+      <summary class="guide-heading">Understanding Modes</summary>
+      <div class="guide-content">
+        <p>Modes are seven different scales you can build from the same set of notes by starting on a different degree. Each mode has a distinct mood or color:</p>
+        <dl class="mode-descriptions">
+          <dt>Ionian (Major)</dt>
+          <dd>The familiar major scale. Bright, happy, resolved. <em>Think: "Happy Birthday," most pop music.</em></dd>
+
+          <dt>Dorian</dt>
+          <dd>A minor scale with a raised 6th. Jazzy, smooth, sophisticated. <em>Think: "So What" by Miles Davis, funk and soul.</em></dd>
+
+          <dt>Phrygian</dt>
+          <dd>A minor scale with a lowered 2nd. Dark, exotic, Spanish-flavored. <em>Think: flamenco guitar, metal intros.</em></dd>
+
+          <dt>Lydian</dt>
+          <dd>A major scale with a raised 4th. Dreamy, floating, ethereal. <em>Think: film scores, "The Simpsons" theme.</em></dd>
+
+          <dt>Mixolydian</dt>
+          <dd>A major scale with a lowered 7th. Bluesy, laid-back, dominant. <em>Think: classic rock, blues, "Norwegian Wood."</em></dd>
+
+          <dt>Aeolian (Natural Minor)</dt>
+          <dd>The natural minor scale. Sad, serious, introspective. <em>Think: "Losing My Religion," most minor-key pop.</em></dd>
+
+          <dt>Locrian</dt>
+          <dd>A minor scale with lowered 2nd and 5th. Unstable, dissonant, tense. <em>Rarely used as a home key; useful for creating tension over diminished chords.</em></dd>
+        </dl>
+      </div>
+    </details>
+
+    <details class="guide-block">
+      <summary class="guide-heading">Diatonic Chords &amp; Roman Numerals</summary>
+      <div class="guide-content">
+        <p>When you build a triad on each degree of a scale using only notes from that scale, you get the <strong>diatonic chords</strong>. Roman numerals label each chord by its position:</p>
+        <ul>
+          <li><strong>Uppercase (I, IV, V)</strong> = major chord</li>
+          <li><strong>Lowercase (ii, iii, vi)</strong> = minor chord</li>
+          <li><strong>Lowercase with &deg; (vii&deg;)</strong> = diminished chord</li>
+        </ul>
+        <p>In the key of C Ionian (major), the chords are: <strong>C &ndash; Dm &ndash; Em &ndash; F &ndash; G &ndash; Am &ndash; Bdim</strong>. Common progressions like I&ndash;V&ndash;vi&ndash;IV (C&ndash;G&ndash;Am&ndash;F) come from combining these chords. Each mode rearranges which degrees are major, minor, or diminished, giving you different harmonic palettes to improvise over.</p>
+      </div>
+    </details>
+
+    <details class="guide-block">
+      <summary class="guide-heading">Reading the Fretboard</summary>
+      <div class="guide-content">
+        <p>The fretboard is displayed in standard tuning (low E to high E, bottom to top). Fret 0 is the open string, and frets are numbered left to right.</p>
+        <ul>
+          <li><strong>Highlighted dots</strong> show notes that belong to the current scale.</li>
+          <li><strong>Red dots</strong> mark the root note &mdash; these are your "home base" positions for the selected key.</li>
+          <li><strong>Dot markers</strong> below the fretboard appear at frets 3, 5, 7, 9, 12 (double dot), and 15, just like on a real guitar neck.</li>
+        </ul>
+        <p>To practice a scale, start at any root note and play the highlighted positions ascending and descending. Try connecting patterns across strings to build fluency in different positions on the neck.</p>
+        <p><strong>Tip:</strong> The 12th fret is one octave above the open string &mdash; the pattern of notes repeats from there. Use this to learn the neck in two halves.</p>
+      </div>
+    </details>
+  </section>
+
+  <script src="js/music-data.js"></script>
+  <script src="js/audio-engine.js"></script>
+  <script src="js/circle-of-fifths.js"></script>
+  <script src="js/guitar-fretboard.js"></script>
+  <script src="js/guitar-app.js"></script>
+</body>
+</html>
