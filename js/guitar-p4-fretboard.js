@@ -6,15 +6,17 @@ const GuitarP4Fretboard = (() => {
   let onNotePlay = null;
   let currentKey = 'C';
 
-  // All-fourths tuning: each string is a perfect fourth (5 semitones) above the previous
-  // Starting from low E, ascending in fourths: E A D G C F
+  // 8-string all-fourths tuning: each string a perfect fourth apart
+  // E1 A1 D2 G2 C3 F3 A#3 D#4
   const TUNING = [
-    { note: 'E', octave: 2, label: 'E' },   // 6th string (low)
-    { note: 'A', octave: 2, label: 'A' },   // 5th
-    { note: 'D', octave: 3, label: 'D' },   // 4th
-    { note: 'G', octave: 3, label: 'G' },   // 3rd
-    { note: 'C', octave: 4, label: 'C' },   // 2nd (B in standard → C in P4)
-    { note: 'F', octave: 4, label: 'F' },   // 1st (E in standard → F in P4)
+    { note: 'E',  octave: 1, label: 'E' },   // 8th string (lowest)
+    { note: 'A',  octave: 1, label: 'A' },   // 7th
+    { note: 'D',  octave: 2, label: 'D' },   // 6th
+    { note: 'G',  octave: 2, label: 'G' },   // 5th
+    { note: 'C',  octave: 3, label: 'C' },   // 4th
+    { note: 'F',  octave: 3, label: 'F' },   // 3rd
+    { note: 'A#', octave: 3, label: 'Bb' },  // 2nd
+    { note: 'D#', octave: 4, label: 'Eb' },  // 1st string (high)
   ];
 
   const NUM_FRETS = 15;

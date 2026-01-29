@@ -6,15 +6,16 @@ const GuitarFretboard = (() => {
   let onNotePlay = null;
   let currentKey = 'C';
 
-  // Standard tuning: string 6 (low E) to string 1 (high E)
-  // Each entry: { note (chromatic), octave }
+  // 8-string standard tuning: F#1 B1 E2 A2 D3 G3 B3 E4
   const TUNING = [
-    { note: 'E', octave: 2, label: 'E' },   // 6th string (low)
-    { note: 'A', octave: 2, label: 'A' },   // 5th
-    { note: 'D', octave: 3, label: 'D' },   // 4th
-    { note: 'G', octave: 3, label: 'G' },   // 3rd
-    { note: 'B', octave: 3, label: 'B' },   // 2nd
-    { note: 'E', octave: 4, label: 'E' },   // 1st string (high)
+    { note: 'F#', octave: 1, label: 'F#' },  // 8th string (lowest)
+    { note: 'B',  octave: 1, label: 'B' },   // 7th
+    { note: 'E',  octave: 2, label: 'E' },   // 6th
+    { note: 'A',  octave: 2, label: 'A' },   // 5th
+    { note: 'D',  octave: 3, label: 'D' },   // 4th
+    { note: 'G',  octave: 3, label: 'G' },   // 3rd
+    { note: 'B',  octave: 3, label: 'B' },   // 2nd
+    { note: 'E',  octave: 4, label: 'E' },   // 1st string (high)
   ];
 
   const NUM_FRETS = 15;
