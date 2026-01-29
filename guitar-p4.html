@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mode Map — Guitar</title>
+  <title>Mode Map — Guitar (All Fourths)</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <nav class="instrument-nav">
     <a href="index.html" class="nav-link">Piano</a>
-    <a href="guitar.html" class="nav-link active">Guitar</a>
-    <a href="guitar-p4.html" class="nav-link">Guitar (P4)</a>
+    <a href="guitar.html" class="nav-link">Guitar</a>
+    <a href="guitar-p4.html" class="nav-link active">Guitar (P4)</a>
   </nav>
 
   <header class="header">
@@ -54,8 +54,43 @@
           <li><strong>Choose a mode</strong> &mdash; Select one of the seven modes. The app defaults to Ionian (major scale).</li>
           <li><strong>Explore the scale</strong> &mdash; The scale notes appear in the info panel. Click any note to hear it. The root note is highlighted in red.</li>
           <li><strong>Play chords</strong> &mdash; The diatonic chords for your key and mode are shown with Roman numerals. Click a chord card to hear its notes played as a short arpeggio.</li>
-          <li><strong>Use the fretboard</strong> &mdash; The guitar neck shows 15 frets in standard tuning (EADGBE). Scale tones are highlighted and labeled; the root note gets a stronger highlight. Click or tap any position to hear it.</li>
+          <li><strong>Use the fretboard</strong> &mdash; The guitar neck shows 15 frets in all-fourths tuning (E A D G C F). Scale tones are highlighted and labeled; the root note gets a stronger highlight. Click or tap any position to hear it.</li>
         </ol>
+      </div>
+    </details>
+
+    <details class="guide-block" open>
+      <summary class="guide-heading">All Fourths Tuning</summary>
+      <div class="guide-content">
+        <p><strong>All-fourths tuning</strong> (also called P4 tuning) tunes every string a perfect fourth apart: <strong>E A D G C F</strong> (low to high).</p>
+        <p>Standard tuning is <em>almost</em> all fourths &mdash; E A D G B E &mdash; but the interval between the 3rd (G) and 2nd (B) strings is a major third instead of a fourth. All-fourths tuning removes that exception, making the interval uniform across all six strings.</p>
+        <h4>Advantages</h4>
+        <ul>
+          <li><strong>Uniform patterns</strong> &mdash; Every scale shape, arpeggio, and chord voicing works identically on every pair of adjacent strings. Learn a pattern once and move it anywhere on the neck without adjustment.</li>
+          <li><strong>Easier transposition</strong> &mdash; Shift any shape up or down the neck, or across string groups, and it stays correct. No more memorizing separate shapes for the B-string offset.</li>
+          <li><strong>Simpler intervals</strong> &mdash; Interval geometry is consistent: an octave is always two strings up and two frets over, a fifth is always one string up and two frets over, etc.</li>
+        </ul>
+        <h4>Trade-offs</h4>
+        <ul>
+          <li><strong>Standard chord voicings change</strong> &mdash; Open chords and barre chords from standard tuning no longer apply on the top two strings. Many familiar shapes need reworking.</li>
+          <li><strong>Slightly higher top strings</strong> &mdash; The 1st string is an F instead of an E, one semitone higher in tension. Some players use a lighter gauge on top.</li>
+          <li><strong>Less learning material</strong> &mdash; Most guitar instruction assumes standard tuning, so you'll be translating or figuring things out on your own.</li>
+        </ul>
+        <h4>Comparison to Standard</h4>
+        <table class="tuning-table">
+          <thead>
+            <tr><th>String</th><th>Standard</th><th>All Fourths</th><th>Difference</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>6th (low)</td><td>E</td><td>E</td><td>Same</td></tr>
+            <tr><td>5th</td><td>A</td><td>A</td><td>Same</td></tr>
+            <tr><td>4th</td><td>D</td><td>D</td><td>Same</td></tr>
+            <tr><td>3rd</td><td>G</td><td>G</td><td>Same</td></tr>
+            <tr><td>2nd</td><td>B</td><td>C</td><td>+1 semitone</td></tr>
+            <tr><td>1st (high)</td><td>E</td><td>F</td><td>+1 semitone</td></tr>
+          </tbody>
+        </table>
+        <p>Players like Stanley Jordan and Tom Quayle are well-known advocates of all-fourths tuning. It's particularly popular among jazz and fusion guitarists who value the symmetry for improvisation.</p>
       </div>
     </details>
 
@@ -116,13 +151,13 @@
     <details class="guide-block">
       <summary class="guide-heading">Reading the Fretboard</summary>
       <div class="guide-content">
-        <p>The fretboard is displayed in standard tuning (low E to high E, bottom to top). Fret 0 is the open string, and frets are numbered left to right.</p>
+        <p>The fretboard is displayed in all-fourths tuning (low E to high F, bottom to top). Fret 0 is the open string, and frets are numbered left to right.</p>
         <ul>
           <li><strong>Highlighted dots</strong> show notes that belong to the current scale.</li>
           <li><strong>Red dots</strong> mark the root note &mdash; these are your "home base" positions for the selected key.</li>
           <li><strong>Dot markers</strong> below the fretboard appear at frets 3, 5, 7, 9, 12 (double dot), and 15, just like on a real guitar neck.</li>
         </ul>
-        <p>To practice a scale, start at any root note and play the highlighted positions ascending and descending. Try connecting patterns across strings to build fluency in different positions on the neck.</p>
+        <p>Because every string pair uses the same interval, any scale pattern you learn can be moved directly to any string group without modification. Look for how the shapes repeat uniformly &mdash; this is the core benefit of P4 tuning.</p>
         <p><strong>Tip:</strong> The 12th fret is one octave above the open string &mdash; the pattern of notes repeats from there. Use this to learn the neck in two halves.</p>
       </div>
     </details>
@@ -131,7 +166,7 @@
   <script src="js/music-data.js"></script>
   <script src="js/audio-engine.js"></script>
   <script src="js/circle-of-fifths.js"></script>
-  <script src="js/guitar-fretboard.js"></script>
-  <script src="js/guitar-app.js"></script>
+  <script src="js/guitar-p4-fretboard.js"></script>
+  <script src="js/guitar-p4-app.js"></script>
 </body>
 </html>
