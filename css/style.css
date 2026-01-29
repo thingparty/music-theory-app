@@ -306,11 +306,11 @@ body {
 }
 
 .piano-key.black.active {
-  background: linear-gradient(to bottom, var(--black-key) 50%, var(--key-active));
+  background: var(--accent);
 }
 
 .piano-key.black.root {
-  background: linear-gradient(to bottom, #3a2a00 30%, var(--key-root));
+  background: var(--key-root);
 }
 
 .piano-key.black.pressed {
