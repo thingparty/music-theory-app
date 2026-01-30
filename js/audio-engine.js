@@ -2,47 +2,44 @@
 
 const AudioEngine = (() => {
   let audioCtx = null;
-  let speakerUnlocked = false;
+  let masterGain = null;
+  let silentAudio = null;
 
-  // iOS routes Web Audio API to the earpiece by default.
-  // Playing a silent WAV through an <audio> element forces the main speaker.
-  function unlockIOSSpeaker() {
-    if (speakerUnlocked) return;
-    speakerUnlocked = true;
-
-    // Build a minimal valid WAV file (1 sample of silence, 16-bit mono 44100Hz)
-    const sampleRate = 44100;
-    const numSamples = sampleRate; // 1 second of silence
+  // On iOS, pure Web Audio oscillators route to the earpiece speaker.
+  // To force the loudspeaker, we connect a silent <audio> element as a
+  // MediaElementSource into the same AudioContext. This switches the
+  // entire audio session to "media playback" mode (loudspeaker).
+  function createSilentMediaElement() {
+    // Build a looping silent WAV
+    const sampleRate = 8000;
+    const numSamples = sampleRate; // 1 second
     const buffer = new ArrayBuffer(44 + numSamples * 2);
     const view = new DataView(buffer);
 
-    // RIFF header
     writeString(view, 0, 'RIFF');
     view.setUint32(4, 36 + numSamples * 2, true);
     writeString(view, 8, 'WAVE');
-    // fmt chunk
     writeString(view, 12, 'fmt ');
-    view.setUint32(16, 16, true);          // chunk size
-    view.setUint16(20, 1, true);           // PCM format
-    view.setUint16(22, 1, true);           // mono
-    view.setUint32(24, sampleRate, true);   // sample rate
-    view.setUint32(28, sampleRate * 2, true); // byte rate
-    view.setUint16(32, 2, true);           // block align
-    view.setUint16(34, 16, true);          // bits per sample
-    // data chunk
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
     writeString(view, 36, 'data');
     view.setUint32(40, numSamples * 2, true);
-    // samples are already 0 (silence)
 
     const blob = new Blob([buffer], { type: 'audio/wav' });
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
-    audio.play().then(() => {
-      // Pause after a brief moment — we just need it to start
-      setTimeout(() => { audio.pause(); URL.revokeObjectURL(url); }, 250);
-    }).catch(() => {
-      URL.revokeObjectURL(url);
-    });
+    audio.loop = true;
+    // Connect it into the AudioContext graph so iOS treats the whole
+    // context as media playback
+    const source = audioCtx.createMediaElementSource(audio);
+    source.connect(audioCtx.destination);
+    audio.play().catch(() => {});
+    return audio;
   }
 
   function writeString(view, offset, str) {
@@ -54,18 +51,26 @@ const AudioEngine = (() => {
   function ensureContext() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.connect(audioCtx.destination);
+      silentAudio = createSilentMediaElement();
     }
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
-    unlockIOSSpeaker();
+    if (silentAudio && silentAudio.paused) {
+      silentAudio.play().catch(() => {});
+    }
     return audioCtx;
   }
 
-  // Resume on user interaction (mobile Safari / Chrome iOS)
-  document.addEventListener('touchstart', ensureContext, { once: true });
-  document.addEventListener('touchend', ensureContext, { once: true });
-  document.addEventListener('click', ensureContext, { once: true });
+  // Unlock on first user interaction (required by mobile browsers)
+  function onFirstInteraction() {
+    ensureContext();
+  }
+  document.addEventListener('touchstart', onFirstInteraction, { once: true });
+  document.addEventListener('touchend', onFirstInteraction, { once: true });
+  document.addEventListener('click', onFirstInteraction, { once: true });
 
   /**
    * Play a single note with ADSR envelope
@@ -99,7 +104,7 @@ const AudioEngine = (() => {
     gain.gain.linearRampToValueAtTime(0, now + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(masterGain);
 
     osc.start(now);
     osc.stop(now + duration + 0.05);
