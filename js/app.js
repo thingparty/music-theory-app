@@ -17,8 +17,9 @@ const App = (() => {
     CircleOfFifths.setSelected('C');
   }
 
-  function onKeySelected(key) {
+  function onKeySelected(key, mode) {
     state.selectedKey = key;
+    if (mode) state.selectedMode = mode;
     update();
   }
 
@@ -110,7 +111,9 @@ const App = (() => {
   function updatePiano() {
     const chromaticNotes = state.scaleNotes.map(n => n.note);
     const root = state.scaleNotes.length > 0 ? state.scaleNotes[0].note : null;
-    PianoKeyboard.setActiveNotes(chromaticNotes, root);
+    const degrees = {};
+    state.scaleNotes.forEach((n, i) => { degrees[n.note] = String(i + 1); });
+    PianoKeyboard.setActiveNotes(chromaticNotes, root, degrees);
     PianoKeyboard.refresh('keyboard-container');
   }
 

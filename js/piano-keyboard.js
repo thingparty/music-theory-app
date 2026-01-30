@@ -3,6 +3,7 @@
 const PianoKeyboard = (() => {
   let activeNotes = new Set(); // chromatic note names in the scale
   let rootNote = null;
+  let scaleDegrees = {};       // chromatic note → degree string ("1"–"7")
   let onNotePlay = null;
 
   // 2 octaves: C3 to B4
@@ -49,7 +50,12 @@ const PianoKeyboard = (() => {
 
         const label = document.createElement('span');
         label.className = 'key-label';
-        label.textContent = note;
+        if (activeNotes.has(note) && scaleDegrees[note]) {
+          label.textContent = scaleDegrees[note];
+          label.classList.add('degree-label');
+        } else {
+          label.textContent = note;
+        }
         key.appendChild(label);
 
         key.addEventListener('mousedown', (e) => {
@@ -88,6 +94,13 @@ const PianoKeyboard = (() => {
           key.classList.add('root');
         }
 
+        if (activeNotes.has(note) && scaleDegrees[note]) {
+          const bLabel = document.createElement('span');
+          bLabel.className = 'key-label degree-label';
+          bLabel.textContent = scaleDegrees[note];
+          key.appendChild(bLabel);
+        }
+
         key.addEventListener('mousedown', (e) => {
           e.preventDefault();
           if (onNotePlay) onNotePlay(note, oct);
@@ -111,9 +124,10 @@ const PianoKeyboard = (() => {
     container.appendChild(keyboard);
   }
 
-  function setActiveNotes(notes, root) {
+  function setActiveNotes(notes, root, degrees) {
     activeNotes = new Set(notes);
     rootNote = root;
+    scaleDegrees = degrees || {};
   }
 
   function refresh(containerId) {

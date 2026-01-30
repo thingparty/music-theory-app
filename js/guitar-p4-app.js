@@ -16,8 +16,9 @@ const App = (() => {
     CircleOfFifths.setSelected('C');
   }
 
-  function onKeySelected(key) {
+  function onKeySelected(key, mode) {
     state.selectedKey = key;
+    if (mode) state.selectedMode = mode;
     update();
   }
 

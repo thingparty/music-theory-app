@@ -20,7 +20,17 @@ const CIRCLE_OF_FIFTHS = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 
 // Display names for circle of fifths keys
 const KEY_DISPLAY_NAMES = {
   'C': 'C', 'G': 'G', 'D': 'D', 'A': 'A', 'E': 'E', 'B': 'B',
-  'F#': 'F#/Gb', 'Db': 'Db', 'Ab': 'Ab', 'Eb': 'Eb', 'Bb': 'Bb', 'F': 'F'
+  'F#': 'F#/Gb', 'Db': 'Db', 'Ab': 'Ab', 'Eb': 'Eb', 'Bb': 'Bb', 'F': 'F',
+  'C#': 'C#', 'G#': 'G#', 'D#': 'Eb'
+};
+
+// Circle of fifths — relative minor keys (aligned with major keys above)
+const CIRCLE_OF_FIFTHS_MINOR = ['A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'Bb', 'F', 'C', 'G', 'D'];
+
+// Display names for minor keys on the inner circle
+const MINOR_KEY_DISPLAY_NAMES = {
+  'A': 'Am', 'E': 'Em', 'B': 'Bm', 'F#': 'F#m', 'C#': 'C#m', 'G#': 'G#m',
+  'D#': 'Ebm', 'Bb': 'Bbm', 'F': 'Fm', 'C': 'Cm', 'G': 'Gm', 'D': 'Dm'
 };
 
 // Internal key (sharp-based) for circle keys
@@ -80,11 +90,16 @@ function getNoteIndex(note) {
   return idx;
 }
 
+// Minor keys that should display with flats (Aeolian context)
+const MINOR_FLAT_KEYS = ['D', 'G', 'C', 'F', 'Bb', 'D#'];
+
 /**
  * Get display name for a note given the current key context
  */
-function getDisplayNote(chromaticNote, key) {
-  const useFlats = FLAT_KEYS.includes(key);
+function getDisplayNote(chromaticNote, key, useFlats) {
+  if (useFlats === undefined) {
+    useFlats = FLAT_KEYS.includes(key);
+  }
   if (useFlats && ENHARMONIC_MAP[chromaticNote]) {
     return ENHARMONIC_MAP[chromaticNote];
   }
@@ -98,13 +113,14 @@ function getDisplayNote(chromaticNote, key) {
 function getScaleNotes(key, mode) {
   const rootIndex = getNoteIndex(KEY_TO_CHROMATIC[key] || key);
   const intervals = MODES[mode].intervals;
+  const useFlats = FLAT_KEYS.includes(key) || (mode === 'aeolian' && MINOR_FLAT_KEYS.includes(key));
 
   return intervals.map(interval => {
     const noteIndex = (rootIndex + interval) % 12;
     const chromaticNote = CHROMATIC_NOTES[noteIndex];
     return {
       note: chromaticNote,
-      display: getDisplayNote(chromaticNote, key),
+      display: getDisplayNote(chromaticNote, key, useFlats),
     };
   });
 }
@@ -116,6 +132,7 @@ function getScaleNotes(key, mode) {
 function getDiatonicChords(key, mode) {
   const scaleNotes = getScaleNotes(key, mode);
   const qualities = MODE_CHORD_QUALITIES[mode];
+  const useFlats = FLAT_KEYS.includes(key) || (mode === 'aeolian' && MINOR_FLAT_KEYS.includes(key));
 
   return scaleNotes.map((scaleNote, i) => {
     const quality = qualities[i];
@@ -126,7 +143,7 @@ function getDiatonicChords(key, mode) {
       const idx = (rootIndex + interval) % 12;
       return {
         note: CHROMATIC_NOTES[idx],
-        display: getDisplayNote(CHROMATIC_NOTES[idx], key),
+        display: getDisplayNote(CHROMATIC_NOTES[idx], key, useFlats),
       };
     });
 

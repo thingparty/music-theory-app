@@ -105,6 +105,29 @@ body {
   fill: var(--text);
 }
 
+/* Inner ring (minor keys) */
+.wedge-inner {
+  fill: #111a30;
+  stroke: var(--bg);
+  stroke-width: 2;
+  transition: fill 0.2s;
+}
+
+.wedge-inner:hover {
+  fill: var(--surface2);
+}
+
+.wedge-inner.selected {
+  fill: var(--accent);
+}
+
+.wedge-label-inner {
+  fill: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
 /* Mode buttons */
 .mode-section {
   margin-bottom: 1.5rem;
@@ -325,6 +348,17 @@ body {
   font-size: 0.7rem;
   color: #888;
   pointer-events: none;
+}
+
+.key-label.degree-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.piano-key.black .key-label.degree-label {
+  color: #fff;
+  bottom: 6px;
 }
 
 /* Instrument navigation */
