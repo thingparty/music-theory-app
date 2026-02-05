@@ -76,45 +76,46 @@ const AudioEngine = (() => {
    * Play a piano-like note with hammer attack and resonance
    * @param {string} note - Chromatic note name (e.g. 'C#')
    * @param {number} octave - Octave number (e.g. 4)
-   * @param {number} duration - Duration in seconds (default 1.2)
+   * @param {number} duration - Duration in seconds (default 0.8)
    */
-  function playPianoNote(note, octave, duration = 1.2) {
+  function playPianoNote(note, octave, duration = 0.8) {
     const ctx = ensureContext();
     const freq = getFrequency(note, octave);
     const now = ctx.currentTime;
 
-    // Piano uses multiple harmonics for richness
+    // Piano uses a few harmonics for warmth without muddiness
     const harmonics = [
       { ratio: 1, gain: 1.0 },      // fundamental
-      { ratio: 2, gain: 0.4 },      // octave
-      { ratio: 3, gain: 0.2 },      // fifth above octave
-      { ratio: 4, gain: 0.15 },     // two octaves
-      { ratio: 5, gain: 0.1 },      // major third above two octaves
+      { ratio: 2, gain: 0.3 },      // octave
+      { ratio: 3, gain: 0.1 },      // fifth above octave
     ];
+
+    // Single gain node for all oscillators to keep them synchronized
+    const masterNoteGain = ctx.createGain();
+    masterNoteGain.gain.setValueAtTime(0, now);
+    masterNoteGain.connect(masterGain);
+
+    // Piano envelope: sharp attack, quick decay to silence
+    const peakGain = 0.3;
+    const attack = 0.008;
+    const decay = duration * 0.3;
+
+    masterNoteGain.gain.linearRampToValueAtTime(peakGain, now + attack);
+    masterNoteGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
     harmonics.forEach(h => {
       const osc = ctx.createOscillator();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq * h.ratio, now);
 
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, now);
+      const oscGain = ctx.createGain();
+      oscGain.gain.setValueAtTime(h.gain, now);
 
-      // Piano envelope: sharp attack, quick decay, gentle sustain, long release
-      const peakGain = 0.25 * h.gain;
-      const attack = 0.005;
-      const decay = 0.1;
-      const sustainLevel = peakGain * 0.4;
-
-      gain.gain.linearRampToValueAtTime(peakGain, now + attack);
-      gain.gain.exponentialRampToValueAtTime(sustainLevel + 0.001, now + attack + decay);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-      osc.connect(gain);
-      gain.connect(masterGain);
+      osc.connect(oscGain);
+      oscGain.connect(masterNoteGain);
 
       osc.start(now);
-      osc.stop(now + duration + 0.05);
+      osc.stop(now + duration + 0.01);
     });
   }
 
@@ -190,7 +191,7 @@ const AudioEngine = (() => {
   function playPianoChord(notes, octave) {
     notes.forEach((n, i) => {
       setTimeout(() => {
-        playPianoNote(n.note, octave, 1.5);
+        playPianoNote(n.note, octave, 1.0);
       }, i * 40);
     });
   }
