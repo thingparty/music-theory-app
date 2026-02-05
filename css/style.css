@@ -271,6 +271,19 @@ body {
   margin: 0 auto;
 }
 
+#keyboard-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#keyboard-container::-webkit-scrollbar {
+  display: none;
+}
+
 .piano-keyboard {
   display: flex;
   justify-content: center;
@@ -707,8 +720,35 @@ details[open] > .guide-heading::before {
   }
 
   .keyboard-section {
-    padding: 1rem;
-    overflow-x: auto;
+    padding: 1rem 0;
+    position: relative;
+  }
+
+  #keyboard-container {
+    padding: 0 1rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .piano-keyboard {
+    justify-content: flex-start;
+  }
+
+  .piano-octave {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Scroll hint gradient on right edge */
+  .keyboard-section::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    background: linear-gradient(to right, transparent, var(--bg));
+    pointer-events: none;
+    opacity: 0.8;
   }
 
   .header .current-display {
