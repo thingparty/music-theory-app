@@ -73,55 +73,147 @@ const AudioEngine = (() => {
   document.addEventListener('click', onFirstInteraction, { once: true });
 
   /**
-   * Play a single note with ADSR envelope
+   * Play a piano-like note with hammer attack and resonance
    * @param {string} note - Chromatic note name (e.g. 'C#')
    * @param {number} octave - Octave number (e.g. 4)
-   * @param {number} duration - Duration in seconds (default 0.8)
+   * @param {number} duration - Duration in seconds (default 1.2)
    */
-  function playNote(note, octave, duration = 0.8) {
+  function playPianoNote(note, octave, duration = 1.2) {
     const ctx = ensureContext();
     const freq = getFrequency(note, octave);
     const now = ctx.currentTime;
 
-    // Oscillator — triangle for warm tone
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now);
+    // Piano uses multiple harmonics for richness
+    const harmonics = [
+      { ratio: 1, gain: 1.0 },      // fundamental
+      { ratio: 2, gain: 0.4 },      // octave
+      { ratio: 3, gain: 0.2 },      // fifth above octave
+      { ratio: 4, gain: 0.15 },     // two octaves
+      { ratio: 5, gain: 0.1 },      // major third above two octaves
+    ];
 
-    // Gain for ADSR envelope
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0, now);
+    harmonics.forEach(h => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq * h.ratio, now);
 
-    // ADSR
-    const attack = 0.02;
-    const decay = 0.1;
-    const sustainLevel = 0.3;
-    const release = 0.3;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, now);
 
-    gain.gain.linearRampToValueAtTime(0.5, now + attack);
-    gain.gain.linearRampToValueAtTime(sustainLevel, now + attack + decay);
-    gain.gain.setValueAtTime(sustainLevel, now + duration - release);
-    gain.gain.linearRampToValueAtTime(0, now + duration);
+      // Piano envelope: sharp attack, quick decay, gentle sustain, long release
+      const peakGain = 0.25 * h.gain;
+      const attack = 0.005;
+      const decay = 0.1;
+      const sustainLevel = peakGain * 0.4;
 
-    osc.connect(gain);
-    gain.connect(masterGain);
+      gain.gain.linearRampToValueAtTime(peakGain, now + attack);
+      gain.gain.exponentialRampToValueAtTime(sustainLevel + 0.001, now + attack + decay);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    osc.start(now);
-    osc.stop(now + duration + 0.05);
-  }
+      osc.connect(gain);
+      gain.connect(masterGain);
 
-  /**
-   * Play a chord with staggered notes for arpeggiated feel
-   * @param {Array<{note: string}>} notes - Array of note objects with .note property
-   * @param {number} octave - Base octave
-   */
-  function playChord(notes, octave) {
-    notes.forEach((n, i) => {
-      setTimeout(() => {
-        playNote(n.note, octave, 1.2);
-      }, i * 50);
+      osc.start(now);
+      osc.stop(now + duration + 0.05);
     });
   }
 
-  return { playNote, playChord, ensureContext };
+  /**
+   * Play a guitar-like plucked string note
+   * @param {string} note - Chromatic note name (e.g. 'C#')
+   * @param {number} octave - Octave number (e.g. 4)
+   * @param {number} duration - Duration in seconds (default 1.5)
+   */
+  function playGuitarNote(note, octave, duration = 1.5) {
+    const ctx = ensureContext();
+    const freq = getFrequency(note, octave);
+    const now = ctx.currentTime;
+
+    // Guitar: sawtooth through lowpass filter for plucked string sound
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, now);
+
+    // Lowpass filter - starts bright, then darkens (simulates string damping)
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(freq * 6, now);
+    filter.frequency.exponentialRampToValueAtTime(freq * 1.5, now + duration * 0.7);
+    filter.Q.setValueAtTime(1, now);
+
+    // Add a subtle second oscillator for body resonance
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq, now);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+
+    // Pluck envelope: instant attack, smooth exponential decay
+    const peakGain = 0.25;
+    const attack = 0.003;
+
+    gain.gain.linearRampToValueAtTime(peakGain, now + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    gain2.gain.linearRampToValueAtTime(peakGain * 0.3, now + attack);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    osc2.connect(gain2);
+    gain2.connect(masterGain);
+
+    osc.start(now);
+    osc.stop(now + duration + 0.05);
+    osc2.start(now);
+    osc2.stop(now + duration + 0.05);
+  }
+
+  /**
+   * Play a single note (legacy, uses piano sound)
+   */
+  function playNote(note, octave, duration = 0.8) {
+    playPianoNote(note, octave, duration);
+  }
+
+  /**
+   * Play a piano chord with staggered notes
+   * @param {Array<{note: string}>} notes - Array of note objects with .note property
+   * @param {number} octave - Base octave
+   */
+  function playPianoChord(notes, octave) {
+    notes.forEach((n, i) => {
+      setTimeout(() => {
+        playPianoNote(n.note, octave, 1.5);
+      }, i * 40);
+    });
+  }
+
+  /**
+   * Play a guitar chord with staggered notes (strummed feel)
+   * @param {Array<{note: string}>} notes - Array of note objects with .note property
+   * @param {number} octave - Base octave
+   */
+  function playGuitarChord(notes, octave) {
+    notes.forEach((n, i) => {
+      setTimeout(() => {
+        playGuitarNote(n.note, octave, 2.0);
+      }, i * 30);
+    });
+  }
+
+  /**
+   * Play a chord (legacy, uses piano sound)
+   */
+  function playChord(notes, octave) {
+    playPianoChord(notes, octave);
+  }
+
+  return { playNote, playChord, playPianoNote, playPianoChord, playGuitarNote, playGuitarChord, ensureContext };
 })();

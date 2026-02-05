@@ -29,7 +29,7 @@ const App = (() => {
   }
 
   function onPianoKeyPlayed(note, octave) {
-    AudioEngine.playNote(note, octave);
+    AudioEngine.playPianoNote(note, octave);
   }
 
   function update() {
@@ -81,7 +81,7 @@ const App = (() => {
       if (i === 0) span.classList.add('root');
       span.textContent = n.display;
       span.addEventListener('click', () => {
-        AudioEngine.playNote(n.note, 4);
+        AudioEngine.playPianoNote(n.note, 4);
       });
       container.appendChild(span);
     });
@@ -100,7 +100,7 @@ const App = (() => {
         <div class="chord-notes">${chord.notes.map(n => n.display).join(' ')}</div>
       `;
       card.addEventListener('click', () => {
-        AudioEngine.playChord(chord.notes, 4);
+        AudioEngine.playPianoChord(chord.notes, 4);
         card.classList.add('played');
         setTimeout(() => card.classList.remove('played'), 400);
       });
